@@ -8,7 +8,7 @@ ROOT_DIR = Path(__file__).resolve().parents[1]
 if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
-from bagofwords import BagOfWord
+from bagofwords import BagOfWords
 
 @pytest.mark.parametrize("document, expected", [
 (
@@ -150,5 +150,5 @@ def test_announcements(document: str, expected: str):
     
     # for training_set in training_sets:
     #     print(f"document: {training_set[0]} | label: {training_set[1]}")
-    results: list[str] = BagOfWord.predict_from_training_set(training_sets=training_sets, test_documents=[document])
+    results: list[str] = BagOfWords.predict_from_training_set(training_sets=training_sets, test_documents=[document])
     assert results[0] == expected

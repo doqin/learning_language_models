@@ -17,7 +17,7 @@ T = TypeVar('T')
 K = TypeVar('K')
 V = TypeVar('V')
 
-class BagOfWord:    
+class BagOfWords:    
     @staticmethod
     def predict_from_training_set(training_sets: list[tuple[str, T]], test_documents: list[str]) -> list[T]:
         documents = [training_set[0] for training_set in training_sets]
@@ -26,8 +26,8 @@ class BagOfWord:
         bow_vectorizer = CountVectorizer()
         vectors = bow_vectorizer.fit_transform(documents)
         test_vectors = bow_vectorizer.transform(test_documents)
-        label_dictionary = BagOfWord.__create_label_dictionary(labels)
-        index_dictionary = BagOfWord.__swap_dictionary_key_value(label_dictionary)
+        label_dictionary = BagOfWords.__create_label_dictionary(labels)
+        index_dictionary = BagOfWords.__swap_dictionary_key_value(label_dictionary)
         index_labels = [label_dictionary[label] for label in labels]
         from sklearn.naive_bayes import MultinomialNB
         classifier = MultinomialNB()
