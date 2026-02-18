@@ -11,18 +11,39 @@ The reason it's 'Naive' is cuz it assumes the features are independent of each o
 Read more at: https://www.geeksforgeeks.org/machine-learning/naive-bayes-classifiers/
 """
 
+from typing import TypeVar
+
+T = TypeVar('T')
+K = TypeVar('K')
+V = TypeVar('V')
+
 class BagOfWord:    
     @staticmethod
-    def predict_from_training_set(training_sets: list[tuple[str, bool]], test_documents: list[str]) -> list[bool]:
+    def predict_from_training_set(training_sets: list[tuple[str, T]], test_documents: list[str]) -> list[T]:
+        documents = [training_set[0] for training_set in training_sets]
+        labels = [training_set[1] for training_set in training_sets]
         from sklearn.feature_extraction.text import CountVectorizer
         bow_vectorizer = CountVectorizer()
-        document_list = [training_set[0] for training_set in training_sets]
-        merged_document = " ".join(document_list)
-        vectors = bow_vectorizer.fit_transform([training_set[0] for training_set in training_sets])
+        vectors = bow_vectorizer.fit_transform(documents)
         test_vectors = bow_vectorizer.transform(test_documents)
-        labels = [training_set[1] for training_set in training_sets]
+        label_dictionary = BagOfWord.__create_label_dictionary(labels)
+        index_dictionary = BagOfWord.__swap_dictionary_key_value(label_dictionary)
+        index_labels = [label_dictionary[label] for label in labels]
         from sklearn.naive_bayes import MultinomialNB
         classifier = MultinomialNB()
-        classifier.fit(vectors, labels)
+        classifier.fit(vectors, index_labels)
         predictions = classifier.predict(test_vectors)
-        return predictions.tolist()
+        return [index_dictionary[prediction] for prediction in predictions.tolist()]
+    
+    @staticmethod
+    def __create_label_dictionary(labels: list[T]) -> dict[T, int]:
+        label_dictionary = dict.fromkeys(labels, 0)
+        index = 0
+        for key in label_dictionary:
+            label_dictionary[key] = index
+            index += 1
+        return label_dictionary
+    
+    @staticmethod
+    def __swap_dictionary_key_value(dictionary: dict[K, V]) -> dict[V, K]:
+        return {value: key for key, value in dictionary.items()}

@@ -15,49 +15,49 @@ from bagofwords import BagOfWord
         """
         Đăng ký học phần
         """,
-        True
+        "DKHP"
     ),
     (
         """
         Tiêu đề là ĐKHP!
         """,
-        True
+        "DKHP"
     ),
     (
         """
         Thông báo khảo sát ý kiến SV về hoạt động giảng dạy của GV - NH 2025-2026
         """,
-        False
+        "Misc"
     ),
     (
         """
         Danh sách chính thức lớp Huredee 7 học tiếng Nhật miễn phí và tư vấn việc làm tại Nhật Bản do tổ chức Huredee tài trợ
         """,
-        False
+        "Misc"
     ),
     (
         """
         Nộp hồ sơ du học Viện Công nghệ IIST, Đại học Hosei
         """,
-        False
+        "Misc"
     ),
     (
         """
         Thông báo Lịch học ôn tập Olympic Toán năm học 2025-2026
         """,
-        False
+        "Schedule"
     ),
     (
         """
         Thông báo nhận đơn nhập học lại, bảo lưu, chuyển ngành, song ngành, thôi học HK 2 2025-2026
         """,
-        False
+        "Misc"
     ),
     (
         """
         Thông báo về việc nhận bằng tốt nghiệp đợt 4 năm 2025
         """,
-        False
+        "Schedule"
     ),
     (
         """
@@ -74,7 +74,7 @@ from bagofwords import BagOfWord
 
         Phòng Đào tạo Đại học.
         """,
-        False
+        "Schedule"
     ),
     (
         """
@@ -89,7 +89,7 @@ from bagofwords import BagOfWord
 
         Phòng Đào tạo Đại học.
         """,
-        False
+        "HP"
     ),
     (
         """
@@ -103,7 +103,7 @@ from bagofwords import BagOfWord
 
         TBN
         """,
-        False
+        "Schedule"
     ),
     (
         """
@@ -122,7 +122,7 @@ from bagofwords import BagOfWord
 
         Phòng Đào tạo Đại học.
         """,
-        False
+        "Schedule"
     ),
     (
         """
@@ -135,19 +135,20 @@ from bagofwords import BagOfWord
 
         Cv. LTT Phương
         """,
-        True
+        "DKHP"
     )
 ])
-def test_announcements(document: str, expected: bool):
+def test_announcements(document: str, expected: str):
     with io.open(ROOT_DIR / "training_data" / "announcements.json", 'r', encoding="utf-8") as file:
         data_sets = json.load(file)["data"]
     
     try:
-        training_sets = [("{0}. {1}".format(data_set["headline"], data_set["document"]), data_set["label"]) for data_set in data_sets]
+        training_sets: list[tuple[str, str]] = [("{0}. {1}".format(data_set["headline"], data_set["document"]), data_set["label"]) for data_set in data_sets]
     except KeyError as e:
         print(f"Training data is deformed, make sure to include a {e} key in the set")
         return
+    
     # for training_set in training_sets:
     #     print(f"document: {training_set[0]} | label: {training_set[1]}")
-    results = BagOfWord.predict_from_training_set(training_sets=training_sets, test_documents=[document])
+    results: list[str] = BagOfWord.predict_from_training_set(training_sets=training_sets, test_documents=[document])
     assert results[0] == expected
